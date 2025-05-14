@@ -19,7 +19,6 @@ fn main() {
         .build();
 
     handle.set_target_fps(60);
-
     let renderer = renderer::Renderer::new();
     let mut game_state = game_state::GameState::new();
 
@@ -30,5 +29,7 @@ fn main() {
         while let Some(event) = input_events.pop_front() {
             game_state.move_player(event);
         }
+
+        game_state.handle_blobs();
     }
 }

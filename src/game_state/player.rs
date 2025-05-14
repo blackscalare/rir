@@ -1,4 +1,4 @@
-use crate::{constants, input_handler::InputEvent};
+use crate::{constants, input_handler::InputEvent, utils::can_move};
 
 pub struct Player {
     pub x: i32,
@@ -11,7 +11,7 @@ impl Player {
     }
 
     pub fn move_player(&mut self, input: InputEvent) {
-        if !self.can_move(&input) {
+        if !can_move(self.x, self.y, &input) {
             return;
         }
 
@@ -30,19 +30,6 @@ impl Player {
 
             InputEvent::Right => {
                 self.x += constants::speeds::PLAYER_MOVE_SPEED;
-            }
-        }
-    }
-
-    fn can_move(&self, input: &InputEvent) -> bool {
-        match input {
-            InputEvent::Up => self.y - 1 > 0,
-            InputEvent::Down => {
-                self.y + 1 < (constants::sizes::WINDOW_HEIGHT - constants::sizes::PLAYER_HEIGHT)
-            }
-            InputEvent::Left => self.x - 1 > 0,
-            InputEvent::Right => {
-                self.x + 1 < (constants::sizes::WINDOW_WIDTH - constants::sizes::PLAYER_WIDTH)
             }
         }
     }
