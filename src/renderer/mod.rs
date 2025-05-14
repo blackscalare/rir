@@ -1,4 +1,5 @@
 use crate::constants;
+use crate::game_state::GameState;
 use crate::utils;
 use raylib::prelude::*;
 
@@ -8,11 +9,14 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(width: i32, height: i32) -> Renderer {
-        Renderer { width, height }
+    pub fn new() -> Renderer {
+        Renderer {
+            width: constants::sizes::WINDOW_WIDTH,
+            height: constants::sizes::WINDOW_HEIGHT,
+        }
     }
 
-    pub fn update(&self, handle: &mut RaylibHandle, thread: &RaylibThread) {
+    pub fn update(&self, handle: &mut RaylibHandle, thread: &RaylibThread, game_state: &GameState) {
         let mut draw_handle = handle.begin_drawing(thread);
         draw_handle.clear_background(Color::WHITE);
         let text_center_x_y = utils::center(
@@ -21,6 +25,7 @@ impl Renderer {
             constants::texts::TEST_TEXT.len() as i32,
             20,
         );
+
         draw_handle.draw_text(
             constants::texts::TEST_TEXT,
             text_center_x_y.0,
@@ -28,6 +33,15 @@ impl Renderer {
             20,
             Color::BLACK,
         );
+
+        draw_handle.draw_rectangle(
+            game_state.get_player().x,
+            game_state.get_player().y,
+            constants::sizes::PLAYER_WIDTH,
+            constants::sizes::PLAYER_HEIGHT,
+            Color::BLACK,
+        );
+
         draw_handle.draw_fps(self.width - 50, 10);
     }
 }
