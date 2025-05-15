@@ -1,0 +1,11 @@
+# Engine related
+target_fps = 60
+
+# Window related
+window_title = "rir"
+game_name = "rir"
+
+# Game related
+blob_health_enabled = false
+hotbar_size = 5 
+

@@ -1,5 +1,6 @@
 use crate::constants;
 use crate::game_state::GameState;
+use crate::gui::GUI;
 use crate::utils;
 use raylib::prelude::*;
 
@@ -16,7 +17,13 @@ impl Renderer {
         }
     }
 
-    pub fn update(&self, handle: &mut RaylibHandle, thread: &RaylibThread, game_state: &GameState) {
+    pub fn update(
+        &self,
+        handle: &mut RaylibHandle,
+        thread: &RaylibThread,
+        game_state: &GameState,
+        gui: &GUI,
+    ) {
         let mut draw_handle = handle.begin_drawing(thread);
         draw_handle.clear_background(Color::WHITE);
         let text_center_x_y = utils::center(
@@ -41,6 +48,8 @@ impl Renderer {
             constants::sizes::PLAYER_HEIGHT,
             Color::BLACK,
         );
+
+        gui.draw(&draw_handle);
 
         for blob in game_state.get_blobs() {
             draw_handle.draw_circle(blob.x, blob.y, constants::sizes::BLOB_RADIUS, blob.color);

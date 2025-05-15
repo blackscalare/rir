@@ -1,7 +1,7 @@
 use rand::{Rng, rng};
 use raylib::color::Color;
 
-use crate::{constants, input_handler::InputEvent, utils::can_move};
+use crate::{config::get_config, constants, input_handler::InputEvent, utils::can_move};
 
 use super::food::Food;
 
@@ -103,10 +103,21 @@ impl Blob {
     }
 
     pub fn search(&mut self) {
+        let cfg = get_config();
         // TODO search for food
         self.move_blob(Self::get_random_input());
         // Lose health every frame
-        self.health -= 1;
+        if cfg.blob_health_enabled {
+            if let Some(new_health) = self.health.checked_sub(1) {
+                self.health = new_health
+            } else {
+                // TODO mark for removal?
+                //      set activity to None where they can be revived and are removed after a certain
+                //      time?
+                self.activity = BlobActivity::None;
+            }
+        }
+
         if self.held_food.is_some() {
             self.activity = BlobActivity::Eating;
         }

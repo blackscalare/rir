@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use blob::{Blob, BlobActivity};
 use player::Player;
-use raylib::{RaylibHandle, RaylibThread};
+use raylib::RaylibHandle;
 
 use crate::input_handler::InputEvent;
 
@@ -64,7 +64,8 @@ impl GameState {
                 }
             }
 
-            if blob.get_health() <= 0 {
+            // TODO use a dead flag and start a counter before it's removed
+            if blob.get_health() == 0 {
                 // TODO remove
             }
         }
