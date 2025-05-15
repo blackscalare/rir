@@ -23,13 +23,8 @@ fn main() {
     let mut game_state = game_state::GameState::new();
 
     while !handle.window_should_close() {
-        renderer.update(&mut handle, &thread, &game_state);
         let mut input_events: VecDeque<InputEvent> = poll_inputs(&handle);
-
-        while let Some(event) = input_events.pop_front() {
-            game_state.move_player(event);
-        }
-
-        game_state.handle_blobs();
+        game_state.update(&mut handle, &mut input_events);
+        renderer.update(&mut handle, &thread, &game_state);
     }
 }

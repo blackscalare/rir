@@ -1,3 +1,6 @@
+use rand::{Rng, rng};
+use raylib::color::Color;
+
 use crate::{constants, input_handler::InputEvent, utils::can_move};
 
 use super::food::Food;
@@ -11,6 +14,7 @@ pub enum BlobActivity {
 pub struct Blob {
     pub x: i32,
     pub y: i32,
+    pub color: Color,
     bites: Option<u32>,
     held_food: Option<Food>,
     health: u32,
@@ -19,15 +23,29 @@ pub struct Blob {
 }
 
 impl Blob {
-    pub fn new() -> Blob {
+    pub fn new(x: i32, y: i32) -> Blob {
         Blob {
-            x: 0,
-            y: 0,
-            health: 0,
-            activity: BlobActivity::None,
+            x,
+            y,
+            color: Self::get_random_color(),
+            health: 100, // TODO constants::health?::BLOB_START_HEALTH
+            activity: BlobActivity::Searching,
             bites: None,
             held_food: None,
             xp: 0,
+        }
+    }
+
+    fn get_random_color() -> Color {
+        let mut rng = rng();
+        loop {
+            let r = rng.random_range(0..=255);
+            let g = rng.random_range(0..=255);
+            let b = rng.random_range(0..=255);
+
+            if r != 0 || g != 0 || b != 0 {
+                return Color { r, g, b, a: 255 };
+            }
         }
     }
 
@@ -59,6 +77,10 @@ impl Blob {
         &self.activity
     }
 
+    pub fn get_health(&mut self) -> u32 {
+        self.health
+    }
+
     pub fn pickup_food(&mut self, food: Food) {
         let bites = food.num_bites();
 
@@ -74,6 +96,7 @@ impl Blob {
 
                 if self.bites == Some(0) {
                     self.held_food = None;
+                    self.activity = BlobActivity::Searching;
                 }
             }
         }
@@ -81,8 +104,21 @@ impl Blob {
 
     pub fn search(&mut self) {
         // TODO search for food
+        self.move_blob(Self::get_random_input());
+        // Lose health every frame
+        self.health -= 1;
         if self.held_food.is_some() {
             self.activity = BlobActivity::Eating;
+        }
+    }
+
+    fn get_random_input() -> InputEvent {
+        let mut rng = rng();
+        match rng.random_range(0..4) {
+            0 => InputEvent::Up,
+            1 => InputEvent::Down,
+            2 => InputEvent::Left,
+            _ => InputEvent::Right,
         }
     }
 }

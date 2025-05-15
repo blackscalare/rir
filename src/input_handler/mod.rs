@@ -7,9 +7,6 @@ pub enum InputEvent {
     Right,
 }
 
-//struct InputHandler {}
-
-//impl InputHandler {
 pub fn poll_inputs(rl: &RaylibHandle) -> VecDeque<InputEvent> {
     let mut events = VecDeque::new();
 
@@ -31,4 +28,3 @@ pub fn poll_inputs(rl: &RaylibHandle) -> VecDeque<InputEvent> {
 
     events
 }
-//}
