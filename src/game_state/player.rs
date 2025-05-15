@@ -31,6 +31,8 @@ impl Player {
             InputEvent::Right => {
                 self.x += constants::speeds::PLAYER_MOVE_SPEED;
             }
+
+            _ => {}
         }
     }
 }

@@ -70,6 +70,8 @@ impl Blob {
             InputEvent::Right => {
                 self.x += constants::speeds::BLOB_MOVE_SPEED;
             }
+
+            _ => {}
         }
     }
 

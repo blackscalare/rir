@@ -18,5 +18,9 @@ pub fn can_move(x: i32, y: i32, input: &InputEvent) -> bool {
         InputEvent::Right => {
             x + 1 < (constants::sizes::WINDOW_WIDTH - constants::sizes::PLAYER_WIDTH)
         }
+        _ => {
+            println!("Error: not valid movement key {:?}", input);
+            false
+        }
     }
 }
