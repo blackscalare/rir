@@ -49,7 +49,7 @@ impl Renderer {
             Color::BLACK,
         );
 
-        gui.draw(&draw_handle);
+        gui.draw(&mut draw_handle);
 
         for blob in game_state.get_blobs() {
             draw_handle.draw_circle(blob.x, blob.y, constants::sizes::BLOB_RADIUS, blob.color);

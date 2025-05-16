@@ -2,7 +2,7 @@ pub mod hotbar;
 use crate::gui::hud::hotbar::Hotbar;
 
 pub struct HUD {
-    hotbar: Hotbar,
+    pub hotbar: Hotbar,
 }
 
 impl HUD {

@@ -1,9 +1,12 @@
 use std::collections::VecDeque;
 
 use hud::HUD;
-use raylib::prelude::RaylibDrawHandle;
+use raylib::{
+    color::Color,
+    prelude::{RaylibDraw, RaylibDrawHandle},
+};
 
-use crate::input_handler::InputEvent;
+use crate::{config::get_config, constants, input_handler::InputEvent};
 
 mod hud;
 
@@ -102,7 +105,27 @@ impl GUI {
         }
     }
 
-    pub fn draw(&self, draw_handle: &RaylibDrawHandle) {
+    pub fn draw(&self, draw_handle: &mut RaylibDrawHandle) {
+        for i in 0..self.hud.hotbar.size {
+            let x_pos: i32 = (10 + (50 * i) + 30) as i32;
+            if self.hud.hotbar.selected_rect - 1 == i {
+                draw_handle.draw_rectangle(
+                    x_pos,
+                    constants::sizes::WINDOW_HEIGHT - 50,
+                    50,
+                    50,
+                    Color::RED,
+                );
+            } else {
+                draw_handle.draw_rectangle(
+                    x_pos,
+                    constants::sizes::WINDOW_HEIGHT - 50,
+                    50,
+                    50,
+                    Color::BLACK,
+                );
+            }
+        }
         //draw_handle.draw_rectangle_rec(rec, color);
     }
 }

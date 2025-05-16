@@ -1,8 +1,8 @@
 use crate::config::get_config;
 
 pub struct Hotbar {
-    size: u32,
-    selected_rect: u32,
+    pub size: u32,
+    pub selected_rect: u32,
 }
 
 impl Hotbar {
