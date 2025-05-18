@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::{collections::VecDeque, process::exit};
 
 use blob::{Blob, BlobActivity};
 use player::Player;
@@ -26,8 +26,8 @@ impl GameState {
     }
 
     pub fn update(&mut self, handle: &mut RaylibHandle, input_events: &mut VecDeque<InputEvent>) {
-        while let Some(event) = input_events.pop_front() {
-            self.move_player(event);
+        for event in input_events {
+            self.handle_input(event);
         }
 
         self.handle_blobs(handle);
@@ -41,7 +41,14 @@ impl GameState {
         &self.blobs
     }
 
-    pub fn move_player(&mut self, input: InputEvent) {
+    fn handle_input(&mut self, input: &InputEvent) {
+        if *input == InputEvent::Escape {
+            exit(0);
+        }
+        self.move_player(input);
+    }
+
+    fn move_player(&mut self, input: &InputEvent) {
         self.player.move_player(input);
     }
 

@@ -1,7 +1,7 @@
 use raylib::prelude::*;
 use std::collections::VecDeque;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum InputEvent {
     Up,
     Down,
@@ -16,6 +16,7 @@ pub enum InputEvent {
     MouseLeft,
     MouseRight,
     E,
+    Escape,
 }
 
 pub fn poll_inputs(rl: &RaylibHandle) -> VecDeque<InputEvent> {
@@ -71,6 +72,10 @@ pub fn poll_inputs(rl: &RaylibHandle) -> VecDeque<InputEvent> {
 
     if rl.is_key_down(KeyboardKey::KEY_ONE) || rl.is_key_down(KeyboardKey::KEY_KP_1) {
         events.push_back(InputEvent::Key1);
+    }
+
+    if rl.is_key_down(KeyboardKey::KEY_ESCAPE) {
+        events.push_back(InputEvent::Escape);
     }
 
     if rl.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {

@@ -38,6 +38,8 @@ fn main() {
         game_state.update(&mut handle, &mut input_events);
         gui.update(&mut input_events);
         renderer.update(&mut handle, &thread, &game_state, &gui);
+
+        input_events.clear();
     }
 }
 

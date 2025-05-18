@@ -10,8 +10,8 @@ impl Player {
         Player { x: 50, y: 50 }
     }
 
-    pub fn move_player(&mut self, input: InputEvent) {
-        if !can_move(self.x, self.y, &input) {
+    pub fn move_player(&mut self, input: &InputEvent) {
+        if !can_move(self.x, self.y, input) {
             return;
         }
 
