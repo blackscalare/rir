@@ -1,7 +1,12 @@
 use rand::{Rng, rng};
 use raylib::color::Color;
 
-use crate::{config::get_config, constants, input_handler::InputEvent, utils::can_move};
+use crate::{
+    config::get_config,
+    constants::{self, sizes::BLOB_RADIUS, speeds::BLOB_MOVE_SPEED},
+    input_handler::InputEvent,
+    utils::can_move,
+};
 
 use super::food::Food;
 
@@ -15,6 +20,7 @@ pub struct Blob {
     pub x: i32,
     pub y: i32,
     pub color: Color,
+    pub radius: f32,
     bites: Option<u32>,
     held_food: Option<Food>,
     health: u32,
@@ -28,10 +34,11 @@ impl Blob {
             x,
             y,
             color: Self::get_random_color(),
-            health: 100, // TODO constants::health?::BLOB_START_HEALTH
+            health: constants::stats::BLOB_START_HEALTH,
             activity: BlobActivity::Searching,
             bites: None,
             held_food: None,
+            radius: BLOB_RADIUS,
             xp: 0,
         }
     }
@@ -56,19 +63,39 @@ impl Blob {
 
         match input {
             InputEvent::Up => {
-                self.y -= constants::speeds::BLOB_MOVE_SPEED;
+                self.y -= BLOB_MOVE_SPEED;
             }
 
             InputEvent::Down => {
-                self.y += constants::speeds::BLOB_MOVE_SPEED;
+                self.y += BLOB_MOVE_SPEED;
             }
 
             InputEvent::Left => {
-                self.x -= constants::speeds::BLOB_MOVE_SPEED;
+                self.x -= BLOB_MOVE_SPEED;
             }
 
             InputEvent::Right => {
-                self.x += constants::speeds::BLOB_MOVE_SPEED;
+                self.x += BLOB_MOVE_SPEED;
+            }
+
+            InputEvent::UpRight => {
+                self.y -= BLOB_MOVE_SPEED;
+                self.x += BLOB_MOVE_SPEED;
+            }
+
+            InputEvent::DownRight => {
+                self.y += BLOB_MOVE_SPEED;
+                self.x += BLOB_MOVE_SPEED;
+            }
+
+            InputEvent::DownLeft => {
+                self.y += BLOB_MOVE_SPEED;
+                self.x -= BLOB_MOVE_SPEED;
+            }
+
+            InputEvent::UpLeft => {
+                self.y -= BLOB_MOVE_SPEED;
+                self.x -= BLOB_MOVE_SPEED;
             }
 
             _ => {}

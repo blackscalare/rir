@@ -6,7 +6,13 @@ use raylib::{
     prelude::{RaylibDraw, RaylibDrawHandle},
 };
 
-use crate::{config::get_config, constants, input_handler::InputEvent};
+use crate::{
+    constants::{
+        self,
+        sizes::{WINDOW_HEIGHT, WINDOW_WIDTH},
+    },
+    input_handler::InputEvent,
+};
 
 mod hud;
 
@@ -114,7 +120,6 @@ impl GUI {
             }
             _ => {}
         }
-        println!("Selected hotbar {:?}", event);
     }
 
     fn move_cursor(&mut self, event: &mut InputEvent) {
@@ -132,11 +137,15 @@ impl GUI {
     }
 
     pub fn draw(&self, draw_handle: &mut RaylibDrawHandle) {
+        self.draw_hotbar(draw_handle);
+    }
+
+    fn draw_hotbar(&self, draw_handle: &mut RaylibDrawHandle) {
         let total_width: i32 = (self.hud.hotbar.size * (50 + 10) - 10) as i32;
         for i in 0..self.hud.hotbar.size {
-            let start_x = (constants::sizes::WINDOW_WIDTH - total_width) / 2;
+            let start_x = (WINDOW_WIDTH - total_width) / 2;
             let x_pos: i32 = start_x + i as i32 * (50 + 10);
-            let y_pos = constants::sizes::WINDOW_HEIGHT - 60;
+            let y_pos = WINDOW_HEIGHT - 60;
             if self.hud.hotbar.selected_rect - 1 == i {
                 draw_handle.draw_rectangle_lines(x_pos, y_pos, 50, 50, Color::RED);
             } else {

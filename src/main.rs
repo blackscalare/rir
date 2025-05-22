@@ -1,11 +1,14 @@
+mod config;
 mod constants;
 mod game_state;
 mod gui;
 mod input_handler;
+mod inventory;
 mod renderer;
 mod utils;
 use crate::config::reload_config;
 use config::get_config;
+use constants::sizes::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use gui::GUI;
 use input_handler::InputEvent;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
@@ -14,21 +17,17 @@ use std::path::Path;
 use std::collections::VecDeque;
 
 use crate::input_handler::poll_inputs;
-mod config;
 
 fn main() {
     let _watcher = watch_config_changes();
     let cfg = get_config();
     let (mut handle, thread) = raylib::init()
-        .size(
-            constants::sizes::WINDOW_WIDTH,
-            constants::sizes::WINDOW_HEIGHT,
-        )
+        .size(WINDOW_WIDTH, WINDOW_HEIGHT)
         .title(&cfg.window_title)
         .build();
 
     handle.set_target_fps(cfg.target_fps);
-    let renderer = renderer::Renderer::new();
+    let mut renderer = renderer::Renderer::new();
     let mut game_state = game_state::GameState::new();
     let mut gui = GUI::new();
 
