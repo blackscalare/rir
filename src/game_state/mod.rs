@@ -2,7 +2,7 @@ use std::{collections::VecDeque, process::exit};
 
 use blob::{Blob, BlobActivity};
 use player::Player;
-use raylib::RaylibHandle;
+use raylib::{RaylibHandle, ffi::CheckCollisionRecs};
 use world::World;
 
 use crate::input_handler::InputEvent;
@@ -31,10 +31,12 @@ impl GameState {
     }
 
     pub fn update(&mut self, handle: &mut RaylibHandle, input_events: &mut VecDeque<InputEvent>) {
-        for event in input_events {
-            self.handle_input(event);
+        // for event in input_events {
+        //     self.handle_input(event);
+        // }
+        unsafe {
+            self.handle_player(input_events, handle);
         }
-
         self.handle_blobs(handle);
     }
 
@@ -52,6 +54,25 @@ impl GameState {
 
     pub fn get_blobs_mut(&mut self) -> &mut Vec<Blob> {
         &mut self.blobs
+    }
+
+    unsafe fn handle_player(
+        &mut self,
+        input_events: &mut VecDeque<InputEvent>,
+        handle: &mut RaylibHandle,
+    ) {
+        // TODO better collision detection
+        //      move to world
+        //      handle collision, problem with borrowing
+        for (position, tree) in self.world.get_trees() {
+            let didCollide = CheckCollisionRecs(self.player.get_rec(), tree.clone().get_rec());
+            if didCollide {
+                println!("Did collide");
+            }
+        }
+        for event in input_events {
+            self.handle_input(event);
+        }
     }
 
     fn handle_input(&mut self, input: &InputEvent) {

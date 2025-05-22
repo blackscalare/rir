@@ -1,3 +1,4 @@
+pub mod extensions;
 pub mod files;
 pub mod sizes;
 pub mod speeds;

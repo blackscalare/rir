@@ -1,5 +1,10 @@
+use raylib::ffi::Rectangle;
+
 use crate::{
-    constants::{self, sizes::INVENTORY_SIZE_START},
+    constants::{
+        self,
+        sizes::{INVENTORY_SIZE_START, PLAYER_HEIGHT, PLAYER_WIDTH},
+    },
     input_handler::InputEvent,
     inventory::{Inventory, item::Item},
     utils::can_move,
@@ -50,6 +55,15 @@ impl Player {
     pub fn add_item(&mut self, item: Item) {
         if self.inventory.get_items().len() + 1 < self.inventory.get_size() as usize {
             self.inventory.add_item(item);
+        }
+    }
+
+    pub fn get_rec(&mut self) -> Rectangle {
+        Rectangle {
+            x: self.x as f32,
+            y: self.y as f32,
+            width: PLAYER_WIDTH as f32,
+            height: PLAYER_HEIGHT as f32,
         }
     }
 }

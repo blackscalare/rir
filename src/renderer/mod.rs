@@ -1,4 +1,5 @@
-use crate::constants::files::SMALL_TREE_GIF;
+use crate::constants::extensions::GIF_EXTENSION;
+use crate::constants::files::{SMALL_BLOB_GIF, SMALL_TREE_GIF};
 use crate::constants::sizes::{PLAYER_HEIGHT, PLAYER_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH};
 use crate::game_state::GameState;
 use crate::gui::GUI;
@@ -6,23 +7,25 @@ use crate::renderer::animation_handler::AnimationHandler;
 use raylib::prelude::*;
 mod animation_handler;
 mod texture_handler;
-use std::env;
-use std::path::Path;
 
 pub struct Renderer {
     width: i32,
     height: i32,
-    pub tree_anim: AnimationHandler,
+    tree_anim: AnimationHandler,
+    blob_anim: AnimationHandler,
 }
 
 impl Renderer {
     pub fn new() -> Renderer {
         unsafe {
-            let tree_anim = AnimationHandler::new_from_memory(SMALL_TREE_GIF, ".gif", 0.2);
+            let tree_anim = AnimationHandler::new_from_memory(SMALL_TREE_GIF, GIF_EXTENSION, 0.2);
+            let blob_anim = AnimationHandler::new_from_memory(SMALL_BLOB_GIF, GIF_EXTENSION, 0.2);
+
             Renderer {
                 width: WINDOW_WIDTH,
                 height: WINDOW_HEIGHT,
                 tree_anim,
+                blob_anim,
             }
         }
     }
@@ -48,7 +51,13 @@ impl Renderer {
         gui.draw(&mut draw_handle);
 
         for blob in game_state.get_blobs() {
-            draw_handle.draw_circle(blob.x, blob.y, blob.radius, blob.color);
+            self.blob_anim.update(draw_handle.get_frame_time());
+            draw_handle.draw_texture(
+                self.blob_anim.texture.get_texture(),
+                blob.x,
+                blob.y,
+                blob.color,
+            );
         }
 
         if !game_state.get_world().get_trees().is_empty() {
