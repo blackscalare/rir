@@ -9,7 +9,7 @@ use crate::input_handler::InputEvent;
 
 mod blob;
 mod food;
-mod player;
+pub mod player;
 mod tree;
 mod world;
 
@@ -31,9 +31,6 @@ impl GameState {
     }
 
     pub fn update(&mut self, handle: &mut RaylibHandle, input_events: &mut VecDeque<InputEvent>) {
-        // for event in input_events {
-        //     self.handle_input(event);
-        // }
         unsafe {
             self.handle_player(input_events, handle);
         }
@@ -52,9 +49,9 @@ impl GameState {
         &self.blobs
     }
 
-    pub fn get_blobs_mut(&mut self) -> &mut Vec<Blob> {
-        &mut self.blobs
-    }
+    // pub fn get_blobs_mut(&mut self) -> &mut Vec<Blob> {
+    //     &mut self.blobs
+    // }
 
     unsafe fn handle_player(
         &mut self,
@@ -64,10 +61,14 @@ impl GameState {
         // TODO better collision detection
         //      move to world
         //      handle collision, problem with borrowing
-        for (position, tree) in self.world.get_trees() {
-            let didCollide = CheckCollisionRecs(self.player.get_rec(), tree.clone().get_rec());
-            if didCollide {
-                println!("Did collide");
+        for tree in self.world.get_trees() {
+            unsafe {
+                let did_collide = CheckCollisionRecs(self.player.get_rec(), tree.get_rec());
+                if did_collide {
+                    println!("Did collide");
+                    tree.take_damage(1);
+                    println!("tree health {}", tree.health);
+                }
             }
         }
         for event in input_events {

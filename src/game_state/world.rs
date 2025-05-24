@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map::ValuesMut};
 
 use crate::utils::Position;
 
@@ -19,7 +19,11 @@ impl World {
         HashMap::from([(Position { x: 100, y: 100 }, Tree::new(100, 100))])
     }
 
-    pub fn get_trees(&self) -> &HashMap<Position, Tree> {
+    pub fn get_trees(&mut self) -> ValuesMut<'_, Position, Tree> {
+        self.trees.values_mut()
+    }
+
+    pub fn get_tree_map(&self) -> &HashMap<Position, Tree> {
         &self.trees
     }
 }

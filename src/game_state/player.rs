@@ -10,11 +10,20 @@ use crate::{
     utils::can_move,
 };
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Direction {
+    Up,
+    Left,
+    Right,
+    Down,
+}
+
 #[derive(Debug, Clone)]
 pub struct Player {
     pub x: i32,
     pub y: i32,
     pub inventory: Inventory,
+    pub direction: Direction,
 }
 
 impl Player {
@@ -23,6 +32,7 @@ impl Player {
             x: 50,
             y: 50,
             inventory: Inventory::new(INVENTORY_SIZE_START),
+            direction: Direction::Down,
         }
     }
 
@@ -34,18 +44,22 @@ impl Player {
         match input {
             InputEvent::Up => {
                 self.y -= constants::speeds::PLAYER_MOVE_SPEED;
+                self.direction = Direction::Up;
             }
 
             InputEvent::Down => {
                 self.y += constants::speeds::PLAYER_MOVE_SPEED;
+                self.direction = Direction::Down;
             }
 
             InputEvent::Left => {
                 self.x -= constants::speeds::PLAYER_MOVE_SPEED;
+                self.direction = Direction::Left;
             }
 
             InputEvent::Right => {
                 self.x += constants::speeds::PLAYER_MOVE_SPEED;
+                self.direction = Direction::Right;
             }
 
             _ => {}
