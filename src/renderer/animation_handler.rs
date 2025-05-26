@@ -1,13 +1,93 @@
-use crate::renderer::texture_handler::AnimatedTexture;
+use std::collections::HashMap;
 
-pub struct AnimationHandler {
+use crate::{
+    constants::{
+        extensions::GIF_EXTENSION,
+        files::{
+            PLAYER_DOWN_GIF, PLAYER_LEFT_GIF, PLAYER_RIGHT_GIF, PLAYER_UP_GIF, SMALL_BLOB_GIF,
+            SMALL_TREE_GIF,
+        },
+    },
+    game_state::player::Direction,
+    renderer::texture_handler::AnimatedTexture,
+};
+
+pub enum Animations {
+    Single(Animation),
+    Multiple(HashMap<Direction, Animation>),
+}
+
+#[derive(PartialEq, Eq, Hash)]
+pub enum AnimationSource {
+    Tree,
+    Blob,
+    Player,
+}
+
+pub struct Animation {
     pub texture: AnimatedTexture,
     pub current_frame: i32,
     pub frame_timer: f32,
     pub frame_delay: f32,
 }
 
+pub struct AnimationHandler {
+    pub animations: HashMap<AnimationSource, Animations>,
+}
+
 impl AnimationHandler {
+    pub unsafe fn new() -> Self {
+        Self {
+            animations: Self::generate_animations(),
+        }
+    }
+
+    unsafe fn generate_animations() -> HashMap<AnimationSource, Animations> {
+        unsafe {
+            HashMap::from([
+                (
+                    AnimationSource::Tree,
+                    Animations::Single(Animation::new_from_memory(
+                        SMALL_TREE_GIF,
+                        GIF_EXTENSION,
+                        0.2,
+                    )),
+                ),
+                (
+                    AnimationSource::Blob,
+                    Animations::Single(Animation::new_from_memory(
+                        SMALL_BLOB_GIF,
+                        GIF_EXTENSION,
+                        0.2,
+                    )),
+                ),
+                (
+                    AnimationSource::Player,
+                    Animations::Multiple(HashMap::from([
+                        (
+                            Direction::Up,
+                            Animation::new_from_memory(PLAYER_UP_GIF, GIF_EXTENSION, 0.2),
+                        ),
+                        (
+                            Direction::Left,
+                            Animation::new_from_memory(PLAYER_LEFT_GIF, GIF_EXTENSION, 0.2),
+                        ),
+                        (
+                            Direction::Right,
+                            Animation::new_from_memory(PLAYER_RIGHT_GIF, GIF_EXTENSION, 0.2),
+                        ),
+                        (
+                            Direction::Down,
+                            Animation::new_from_memory(PLAYER_DOWN_GIF, GIF_EXTENSION, 0.2),
+                        ),
+                    ])),
+                ),
+            ])
+        }
+    }
+}
+
+impl Animation {
     pub unsafe fn new(texture_path: &str, frame_delay: f32) -> Self {
         Self {
             texture: AnimatedTexture::new(texture_path),
