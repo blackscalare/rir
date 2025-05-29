@@ -1,18 +1,8 @@
 use std::collections::VecDeque;
 
 use hud::HUD;
-use raylib::{
-    color::Color,
-    prelude::{RaylibDraw, RaylibDrawHandle},
-};
 
-use crate::{
-    constants::{
-        self,
-        sizes::{WINDOW_HEIGHT, WINDOW_WIDTH},
-    },
-    input_handler::InputEvent,
-};
+use crate::input_handler::InputEvent;
 
 mod hud;
 
@@ -33,7 +23,7 @@ enum Action {
 }
 
 pub struct GUI {
-    hud: HUD,
+    pub hud: HUD,
     state: State,
     action: Action,
 }
@@ -57,7 +47,7 @@ impl GUI {
                 InputEvent::MouseLeft | InputEvent::MouseRight | InputEvent::Enter => {
                     if self.state == State::Main {
                         self.action = Action::SelectHotbar;
-                        // TODO UseHotbar?
+                        // TODO: UseHotbar?
                     } else if self.state == State::Start
                         || self.state == State::Options
                         || self.state == State::Inventory
@@ -133,32 +123,6 @@ impl GUI {
             InputEvent::Right => {}
 
             _ => {}
-        }
-    }
-
-    pub fn draw(&self, draw_handle: &mut RaylibDrawHandle) {
-        self.draw_hotbar(draw_handle);
-    }
-
-    fn draw_hotbar(&self, draw_handle: &mut RaylibDrawHandle) {
-        let total_width: i32 = (self.hud.hotbar.size * (50 + 10) - 10) as i32;
-        for i in 0..self.hud.hotbar.size {
-            let start_x = (WINDOW_WIDTH - total_width) / 2;
-            let x_pos: i32 = start_x + i as i32 * (50 + 10);
-            let y_pos = WINDOW_HEIGHT - 60;
-            if self.hud.hotbar.selected_rect - 1 == i {
-                draw_handle.draw_rectangle_lines(x_pos, y_pos, 50, 50, Color::RED);
-            } else {
-                draw_handle.draw_rectangle_lines(x_pos, y_pos, 50, 50, Color::BLACK);
-            }
-
-            draw_handle.draw_text(
-                (i + 1).to_string().as_str(),
-                x_pos + 10,
-                y_pos + 10,
-                8,
-                Color::BLACK,
-            );
         }
     }
 }

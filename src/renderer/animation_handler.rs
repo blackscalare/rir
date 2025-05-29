@@ -4,8 +4,8 @@ use crate::{
     constants::{
         extensions::GIF_EXTENSION,
         files::{
-            PLAYER_DOWN_GIF, PLAYER_LEFT_GIF, PLAYER_RIGHT_GIF, PLAYER_UP_GIF, SMALL_BLOB_GIF,
-            SMALL_TREE_GIF,
+            AXE_GIF, PLAYER_DOWN_GIF, PLAYER_LEFT_GIF, PLAYER_RIGHT_GIF, PLAYER_UP_GIF,
+            SMALL_BLOB_GIF, SMALL_TREE_GIF,
         },
     },
     game_state::player::Direction,
@@ -22,6 +22,7 @@ pub enum AnimationSource {
     Tree,
     Blob,
     Player,
+    Axe,
 }
 
 pub struct Animation {
@@ -38,7 +39,7 @@ pub struct AnimationHandler {
 impl AnimationHandler {
     pub unsafe fn new() -> Self {
         Self {
-            animations: Self::generate_animations(),
+            animations: unsafe { Self::generate_animations() },
         }
     }
 
@@ -82,24 +83,28 @@ impl AnimationHandler {
                         ),
                     ])),
                 ),
+                (
+                    AnimationSource::Axe,
+                    Animations::Single(Animation::new_from_memory(AXE_GIF, GIF_EXTENSION, 0.2)),
+                ),
             ])
         }
     }
 }
 
 impl Animation {
-    pub unsafe fn new(texture_path: &str, frame_delay: f32) -> Self {
-        Self {
-            texture: AnimatedTexture::new(texture_path),
-            current_frame: 0,
-            frame_timer: 0.0,
-            frame_delay,
-        }
-    }
+    // pub unsafe fn new(texture_path: &str, frame_delay: f32) -> Self {
+    //     Self {
+    //         texture: AnimatedTexture::new(texture_path),
+    //         current_frame: 0,
+    //         frame_timer: 0.0,
+    //         frame_delay,
+    //     }
+    // }
 
     pub unsafe fn new_from_memory(data: &[u8], extension: &str, frame_delay: f32) -> Self {
         Self {
-            texture: AnimatedTexture::new_from_memory(data, extension),
+            texture: unsafe { AnimatedTexture::new_from_memory(data, extension) },
             current_frame: 0,
             frame_timer: 0.0,
             frame_delay,
@@ -122,15 +127,15 @@ impl Animation {
         }
     }
 
-    pub fn get_frame_source_rect(&self) -> raylib::core::math::Rectangle {
-        let (w, h) = self.texture.frame_size();
-
-        println!("{} {}", w, h);
-        raylib::core::math::Rectangle {
-            x: 0.0,
-            y: (self.current_frame * h) as f32,
-            width: w as f32,
-            height: h as f32,
-        }
-    }
+    // pub fn get_frame_source_rect(&self) -> raylib::core::math::Rectangle {
+    //     let (w, h) = self.texture.frame_size();
+    //
+    //     println!("{} {}", w, h);
+    //     raylib::core::math::Rectangle {
+    //         x: 0.0,
+    //         y: (self.current_frame * h) as f32,
+    //         width: w as f32,
+    //         height: h as f32,
+    //     }
+    // }
 }

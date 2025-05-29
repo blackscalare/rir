@@ -2,8 +2,8 @@ use std::ffi::CString;
 use std::os::raw::c_int;
 
 use raylib::ffi::{
-    Image, LoadImageAnim, LoadImageAnimFromMemory, LoadTextureFromImage, Texture2D, UnloadImage,
-    UpdateTexture,
+    Image, /*LoadImageAnim,*/ LoadImageAnimFromMemory, LoadTextureFromImage, Texture2D,
+    UnloadImage, UpdateTexture,
 };
 
 pub struct AnimatedTexture {
@@ -15,41 +15,43 @@ pub struct AnimatedTexture {
 }
 
 impl AnimatedTexture {
-    pub unsafe fn new(path: &str) -> Self {
-        let c_path = CString::new(path).unwrap();
-        let mut frame_count: c_int = 0;
-        let image = LoadImageAnim(c_path.as_ptr(), &mut frame_count);
-        // let texture = LoadTextureFromImage(image);
-        let raw_texture = LoadTextureFromImage(image);
-
-        let frame_width = image.width;
-        let frame_height = image.height;
-        let texture = FfiTextureWrapper(raw_texture);
-
-        println!("Loading image {} with properties:", path);
-        println!("\tImage size: {}x{}", image.width, image.height);
-        println!("\tFame size: {}x{}", frame_width, frame_height);
-        println!("\tFrame count: {}", frame_count);
-
-        Self {
-            image,
-            frame_count,
-            frame_width,
-            frame_height,
-            texture,
-        }
-    }
+    // pub unsafe fn new(path: &str) -> Self {
+    //     let c_path = CString::new(path).unwrap();
+    //     let mut frame_count: c_int = 0;
+    //     let image = unsafe { LoadImageAnim(c_path.as_ptr(), &mut frame_count) };
+    //     // let texture = LoadTextureFromImage(image);
+    //     let raw_texture = unsafe { LoadTextureFromImage(image) };
+    //
+    //     let frame_width = image.width;
+    //     let frame_height = image.height;
+    //     let texture = FfiTextureWrapper(raw_texture);
+    //
+    //     println!("Loading image {} with properties:", path);
+    //     println!("\tImage size: {}x{}", image.width, image.height);
+    //     println!("\tFame size: {}x{}", frame_width, frame_height);
+    //     println!("\tFrame count: {}", frame_count);
+    //
+    //     Self {
+    //         image,
+    //         frame_count,
+    //         frame_width,
+    //         frame_height,
+    //         texture,
+    //     }
+    // }
 
     pub unsafe fn new_from_memory(data: &[u8], extension: &str) -> Self {
         let ext = CString::new(extension).unwrap();
         let mut frame_count: c_int = 0;
-        let image = LoadImageAnimFromMemory(
-            ext.as_ptr(),
-            data.as_ptr(),
-            data.len() as i32,
-            &mut frame_count,
-        );
-        let raw_texture = LoadTextureFromImage(image);
+        let image = unsafe {
+            LoadImageAnimFromMemory(
+                ext.as_ptr(),
+                data.as_ptr(),
+                data.len() as i32,
+                &mut frame_count,
+            )
+        };
+        let raw_texture = unsafe { LoadTextureFromImage(image) };
 
         let frame_width = image.width;
         let frame_height = image.height;
@@ -79,9 +81,9 @@ impl AnimatedTexture {
         let frame_size_bytes = frame_pixels * bytes_per_pixel;
 
         let data_ptr = self.image.data as *const u8;
-        let frame_ptr = data_ptr.add(frame_size_bytes * frame as usize) as *mut _;
+        let frame_ptr = unsafe { data_ptr.add(frame_size_bytes * frame as usize) } as *mut _;
 
-        UpdateTexture(self.texture.0, frame_ptr);
+        unsafe { UpdateTexture(self.texture.0, frame_ptr) };
     }
 
     pub fn get_texture(&self) -> &FfiTextureWrapper {
@@ -92,9 +94,9 @@ impl AnimatedTexture {
         self.frame_count
     }
 
-    pub fn frame_size(&self) -> (i32, i32) {
-        (self.frame_width, self.frame_height)
-    }
+    // pub fn frame_size(&self) -> (i32, i32) {
+    //     (self.frame_width, self.frame_height)
+    // }
 }
 
 impl Drop for AnimatedTexture {

@@ -4,3 +4,4 @@ pub mod sizes;
 pub mod speeds;
 pub mod stats;
 pub mod texts;
+pub mod timers;

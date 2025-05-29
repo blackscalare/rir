@@ -5,7 +5,7 @@ use player::Player;
 use raylib::{RaylibHandle, ffi::CheckCollisionRecs};
 use world::World;
 
-use crate::input_handler::InputEvent;
+use crate::{constants::timers::BLOB_SPAWN_TIMER, input_handler::InputEvent};
 
 mod blob;
 mod food;
@@ -32,7 +32,7 @@ impl GameState {
 
     pub fn update(&mut self, handle: &mut RaylibHandle, input_events: &mut VecDeque<InputEvent>) {
         unsafe {
-            self.handle_player(input_events, handle);
+            self.handle_player(input_events /*, handle*/);
         }
         self.handle_blobs(handle);
     }
@@ -56,9 +56,10 @@ impl GameState {
     unsafe fn handle_player(
         &mut self,
         input_events: &mut VecDeque<InputEvent>,
-        handle: &mut RaylibHandle,
+        // handle: &mut RaylibHandle,
     ) {
-        // TODO better collision detection
+        self.player.update();
+        // TODO: better collision detection
         //      move to world
         //      handle collision, problem with borrowing
         for tree in self.world.get_trees() {
@@ -80,7 +81,8 @@ impl GameState {
         if *input == InputEvent::Escape {
             exit(0);
         }
-        self.move_player(input);
+        self.player.move_player(input);
+        self.player.handle_other_input(input);
     }
 
     fn move_player(&mut self, input: &InputEvent) {
@@ -106,17 +108,16 @@ impl GameState {
                 }
             }
 
-            // TODO use a dead flag and start a counter before it's removed
+            // TODO: use a dead flag and start a counter before it's removed
             if blob.get_health() == 0 {
-                // TODO remove
+                // TODO: remove
             }
         }
     }
 
     fn should_spawn_blob(&mut self, handle: &RaylibHandle) -> bool {
         let current_time = handle.get_time();
-        // TODO constants::timers::BLOB_SPAWN_TIMER
-        if current_time - self.last_blob_spawn >= 5.0 {
+        if current_time - self.last_blob_spawn >= BLOB_SPAWN_TIMER {
             self.last_blob_spawn = current_time;
             return true;
         }

@@ -1,12 +1,16 @@
 use raylib::ffi::Rectangle;
 
 use crate::{
+    config::get_config,
     constants::{
         self,
         sizes::{INVENTORY_SIZE_START, PLAYER_HEIGHT, PLAYER_WIDTH},
     },
     input_handler::InputEvent,
-    inventory::{Inventory, item::Item},
+    inventory::{
+        Inventory,
+        item::{InventoryItem, Item},
+    },
     utils::can_move,
 };
 
@@ -24,6 +28,8 @@ pub struct Player {
     pub y: i32,
     pub inventory: Inventory,
     pub direction: Direction,
+    pub is_attacking: bool,
+    attack_timer: i32,
 }
 
 impl Player {
@@ -31,8 +37,32 @@ impl Player {
         Player {
             x: 50,
             y: 50,
-            inventory: Inventory::new(INVENTORY_SIZE_START),
+            inventory: Inventory::new(
+                INVENTORY_SIZE_START,
+                Some(vec![InventoryItem::new(Item::Axe, 0)]),
+            ),
             direction: Direction::Down,
+            is_attacking: false,
+            attack_timer: 0,
+        }
+    }
+
+    pub fn update(&mut self) {
+        if self.is_attacking {
+            self.attack_timer += 1;
+            if self.attack_timer >= (get_config().target_fps / 2) as i32 {
+                self.is_attacking = false;
+                self.attack_timer = 0;
+            }
+        }
+    }
+
+    pub fn handle_other_input(&mut self, input: &InputEvent) {
+        if *input == InputEvent::E {
+            if !self.is_attacking {
+                self.is_attacking = true;
+                self.attack_timer = 0;
+            }
         }
     }
 
@@ -68,7 +98,7 @@ impl Player {
 
     pub fn add_item(&mut self, item: Item) {
         if self.inventory.get_items().len() + 1 < self.inventory.get_size() as usize {
-            self.inventory.add_item(item);
+            self.inventory.add_item(InventoryItem::from_item(item));
         }
     }
 

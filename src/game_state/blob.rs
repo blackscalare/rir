@@ -3,7 +3,7 @@ use raylib::color::Color;
 
 use crate::{
     config::get_config,
-    constants::{self, sizes::BLOB_RADIUS, speeds::BLOB_MOVE_SPEED},
+    constants::{self, speeds::BLOB_MOVE_SPEED},
     input_handler::InputEvent,
     utils::can_move,
 };
@@ -20,7 +20,6 @@ pub struct Blob {
     pub x: i32,
     pub y: i32,
     pub color: Color,
-    pub radius: f32,
     bites: Option<u32>,
     held_food: Option<Food>,
     health: u32,
@@ -38,7 +37,6 @@ impl Blob {
             activity: BlobActivity::Searching,
             bites: None,
             held_food: None,
-            radius: BLOB_RADIUS,
             xp: 0,
         }
     }
@@ -133,14 +131,14 @@ impl Blob {
 
     pub fn search(&mut self) {
         let cfg = get_config();
-        // TODO search for food
+        // TODO: search for food
         self.move_blob(Self::get_random_input());
         // Lose health every frame
         if cfg.blob_health_enabled {
             if let Some(new_health) = self.health.checked_sub(1) {
                 self.health = new_health
             } else {
-                // TODO mark for removal?
+                // TODO: mark for removal?
                 //      set activity to None where they can be revived and are removed after a certain
                 //      time?
                 self.activity = BlobActivity::None;
