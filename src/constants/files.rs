@@ -12,3 +12,6 @@ pub const PLAYER_DOWN_GIF: &[u8] = include_bytes!("../textures/player/idle_down.
 
 // Items
 pub const AXE_GIF: &[u8] = include_bytes!("../textures/axe/axe.gif");
+
+// Placeholders
+pub const PLACEHOLDER_PNG: &[u8] = include_bytes!("../textures/placeholder/placeholder.png");

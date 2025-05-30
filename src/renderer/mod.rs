@@ -36,7 +36,7 @@ impl Renderer {
         self.draw_gui(gui, game_state, &mut draw_handle);
         self.draw_player(game_state, &mut draw_handle);
         self.draw_blobs(game_state, &mut draw_handle);
-        self.draw_trees(game_state, &mut draw_handle);
+        self.draw_world(game_state, &mut draw_handle);
         draw_handle.draw_fps(WINDOW_WIDTH - 100, 10);
     }
 
@@ -71,8 +71,8 @@ impl Renderer {
                 // TODO: better handling
                 let anim_source: AnimationSource = match item.item {
                     Item::Axe => AnimationSource::Axe,
-
-                    _ => AnimationSource::Axe,
+                    Item::BlobSpawner => AnimationSource::Placeholder,
+                    // _ => AnimationSource::Axe,
                 };
 
                 self.update_and_draw_animation(
@@ -124,11 +124,30 @@ impl Renderer {
         }
     }
 
+    fn draw_world(&mut self, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
+        self.draw_trees(game_state, draw_handle);
+        self.draw_items(game_state, draw_handle);
+    }
+
     fn draw_trees(&mut self, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
         if !game_state.get_world().get_tree_map().is_empty() {
             for position in game_state.get_world().get_tree_map().keys() {
                 self.update_and_draw_animation(
                     AnimationSource::Tree,
+                    None,
+                    position.x,
+                    position.y,
+                    Color::WHITE,
+                    draw_handle,
+                );
+            }
+        }
+    }
+    fn draw_items(&mut self, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
+        if !game_state.get_world().get_item_map().is_empty() {
+            for position in game_state.get_world().get_item_map().keys() {
+                self.update_and_draw_animation(
+                    AnimationSource::Placeholder,
                     None,
                     position.x,
                     position.y,

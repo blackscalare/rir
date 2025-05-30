@@ -5,7 +5,7 @@ use player::Player;
 use raylib::{RaylibHandle, ffi::CheckCollisionRecs};
 use world::World;
 
-use crate::{constants::timers::BLOB_SPAWN_TIMER, input_handler::InputEvent};
+use crate::{constants::timers::BLOB_SPAWN_TIMER, gui::GUI, input_handler::InputEvent};
 
 mod blob;
 mod food;
@@ -30,9 +30,14 @@ impl GameState {
         }
     }
 
-    pub fn update(&mut self, handle: &mut RaylibHandle, input_events: &mut VecDeque<InputEvent>) {
+    pub fn update(
+        &mut self,
+        handle: &mut RaylibHandle,
+        input_events: &mut VecDeque<InputEvent>,
+        gui: &GUI,
+    ) {
         unsafe {
-            self.handle_player(input_events /*, handle*/);
+            self.handle_player(input_events, gui);
         }
         self.handle_blobs(handle);
     }
@@ -53,12 +58,8 @@ impl GameState {
     //     &mut self.blobs
     // }
 
-    unsafe fn handle_player(
-        &mut self,
-        input_events: &mut VecDeque<InputEvent>,
-        // handle: &mut RaylibHandle,
-    ) {
-        self.player.update();
+    unsafe fn handle_player(&mut self, input_events: &mut VecDeque<InputEvent>, gui: &GUI) {
+        self.player.update(gui);
         // TODO: better collision detection
         //      move to world
         //      handle collision, problem with borrowing
@@ -81,20 +82,19 @@ impl GameState {
         if *input == InputEvent::Escape {
             exit(0);
         }
-        self.player.move_player(input);
-        self.player.handle_other_input(input);
-    }
 
-    fn move_player(&mut self, input: &InputEvent) {
         self.player.move_player(input);
+        self.player.handle_other_input(input, &mut self.world);
     }
 
     pub fn handle_blobs(&mut self, handle: &mut RaylibHandle) {
-        if self.blobs.is_empty() || self.should_spawn_blob(handle) {
+        if self.should_spawn_blob(handle) && !self.world.get_item_map().is_empty() {
             println!("Creating new blob!");
-            self.blobs.push(Blob::new(self.player.x, self.player.y));
+            // TODO: implement BlobSpawner spawn logic
+            for (position, _) in self.world.get_item_map() {
+                self.blobs.push(Blob::new(position.x, position.y));
+            }
         }
-
         for blob in self.blobs.iter_mut() {
             match blob.get_activity() {
                 BlobActivity::None => {}

@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 use crate::{
     constants::{
-        extensions::GIF_EXTENSION,
+        extensions::{GIF_EXTENSION, PNG_EXTENSION},
         files::{
-            AXE_GIF, PLAYER_DOWN_GIF, PLAYER_LEFT_GIF, PLAYER_RIGHT_GIF, PLAYER_UP_GIF,
-            SMALL_BLOB_GIF, SMALL_TREE_GIF,
+            AXE_GIF, PLACEHOLDER_PNG, PLAYER_DOWN_GIF, PLAYER_LEFT_GIF, PLAYER_RIGHT_GIF,
+            PLAYER_UP_GIF, SMALL_BLOB_GIF, SMALL_TREE_GIF,
         },
     },
     game_state::player::Direction,
@@ -23,6 +23,7 @@ pub enum AnimationSource {
     Blob,
     Player,
     Axe,
+    Placeholder,
 }
 
 pub struct Animation {
@@ -86,6 +87,14 @@ impl AnimationHandler {
                 (
                     AnimationSource::Axe,
                     Animations::Single(Animation::new_from_memory(AXE_GIF, GIF_EXTENSION, 0.2)),
+                ),
+                (
+                    AnimationSource::Placeholder,
+                    Animations::Single(Animation::new_from_memory(
+                        PLACEHOLDER_PNG,
+                        PNG_EXTENSION,
+                        0.0,
+                    )),
                 ),
             ])
         }

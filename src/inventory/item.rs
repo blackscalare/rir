@@ -1,10 +1,14 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Item {
+    // TODO: expand into something more than enum so BlobSpawners can have their own
+    //       spawn timers
     BlobSpawner,
     Axe,
 }
 
-#[derive(Debug, Clone)]
+impl Item {}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct InventoryItem {
     pub item: Item,
     pub hotbar_slot: Option<u32>,
