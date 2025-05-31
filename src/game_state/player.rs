@@ -15,7 +15,7 @@ use crate::{
     utils::{Position, can_move},
 };
 
-use super::{GameState, world::World};
+use super::world::World;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Direction {
@@ -75,16 +75,17 @@ impl Player {
                 }
 
                 if inventory_item.item == Item::BlobSpawner {
-                    world.place_item(
-                        Position {
-                            x: self.x,
-                            y: self.y,
-                        },
-                        Item::BlobSpawner,
-                    );
+                    world.place_item(self.get_center_position(), Item::BlobSpawner);
                     self.inventory.remove_selected_item();
                 }
             }
+        }
+    }
+
+    fn get_center_position(&self) -> Position {
+        Position {
+            x: self.x + PLAYER_WIDTH / 2,
+            y: self.y + PLAYER_HEIGHT / 2,
         }
     }
 

@@ -1,8 +1,10 @@
 use std::collections::{HashMap, hash_map::ValuesMut};
 
+use raylib::ffi::CheckCollisionRecs;
+
 use crate::{inventory::item::Item, utils::Position};
 
-use super::tree::Tree;
+use super::{player::Player, tree::Tree};
 
 pub struct World {
     trees: HashMap<Position, Tree>,
@@ -59,5 +61,36 @@ impl World {
 
     pub fn place_item(&mut self, position: Position, item: Item) {
         self.items.insert(position, item);
+    }
+
+    pub fn handle_collisions(&mut self, player: &mut Player) {
+        self.handle_tree_collisions(player);
+    }
+
+    fn handle_tree_collisions(&mut self, player: &mut Player) {
+        let mut trees_to_destroy: Vec<Position> = vec![];
+
+        for (position, tree) in self.trees.iter_mut() {
+            unsafe {
+                let did_collide = CheckCollisionRecs(player.get_rec(), tree.get_rec());
+                if did_collide && player.is_attacking {
+                    println!("Attacked tree");
+                    // TODO:take damage according to item
+                    tree.take_damage(10);
+                    if tree.health == 0 {
+                        trees_to_destroy.push(*position);
+                    }
+                }
+            }
+        }
+
+        self.destroy_trees(trees_to_destroy);
+    }
+
+    fn destroy_trees(&mut self, trees_to_destroy: Vec<Position>) {
+        for position in trees_to_destroy {
+            self.trees.remove(&position);
+            self.items.insert(position, Item::Wood);
+        }
     }
 }

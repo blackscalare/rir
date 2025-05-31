@@ -4,6 +4,7 @@ pub enum Item {
     //       spawn timers
     BlobSpawner,
     Axe,
+    Wood,
 }
 
 impl Item {}

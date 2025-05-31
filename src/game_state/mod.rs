@@ -3,9 +3,12 @@ use std::{collections::VecDeque, process::exit};
 use blob::{Blob, BlobActivity};
 use player::Player;
 use raylib::{RaylibHandle, ffi::CheckCollisionRecs};
+use tree::Tree;
 use world::World;
 
-use crate::{constants::timers::BLOB_SPAWN_TIMER, gui::GUI, input_handler::InputEvent};
+use crate::{
+    constants::timers::BLOB_SPAWN_TIMER, gui::GUI, input_handler::InputEvent, inventory::item::Item,
+};
 
 mod blob;
 mod food;
@@ -63,16 +66,7 @@ impl GameState {
         // TODO: better collision detection
         //      move to world
         //      handle collision, problem with borrowing
-        for tree in self.world.get_trees() {
-            unsafe {
-                let did_collide = CheckCollisionRecs(self.player.get_rec(), tree.get_rec());
-                if did_collide {
-                    println!("Did collide");
-                    tree.take_damage(1);
-                    println!("tree health {}", tree.health);
-                }
-            }
-        }
+        self.world.handle_collisions(&mut self.player);
         for event in input_events {
             self.handle_input(event);
         }
@@ -88,11 +82,20 @@ impl GameState {
     }
 
     pub fn handle_blobs(&mut self, handle: &mut RaylibHandle) {
-        if self.should_spawn_blob(handle) && !self.world.get_item_map().is_empty() {
+        if self.should_spawn_blob(handle)
+            && !self.world.get_item_map().is_empty()
+            && self
+                .world
+                .get_item_map()
+                .iter()
+                .any(|item| *item.1 == Item::BlobSpawner)
+        {
             println!("Creating new blob!");
             // TODO: implement BlobSpawner spawn logic
-            for (position, _) in self.world.get_item_map() {
-                self.blobs.push(Blob::new(position.x, position.y));
+            for (position, item) in self.world.get_item_map() {
+                if *item == Item::BlobSpawner {
+                    self.blobs.push(Blob::new(position.x, position.y));
+                }
             }
         }
         for blob in self.blobs.iter_mut() {

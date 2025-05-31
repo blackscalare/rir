@@ -2,7 +2,7 @@ use std::ffi::CString;
 use std::os::raw::c_int;
 
 use raylib::ffi::{
-    Image, /*LoadImageAnim,*/ LoadImageAnimFromMemory, LoadTextureFromImage, Texture2D,
+    GenImageWhiteNoise, Image, LoadImageAnimFromMemory, LoadTextureFromImage, Texture2D,
     UnloadImage, UpdateTexture,
 };
 
@@ -40,7 +40,7 @@ impl AnimatedTexture {
     //     }
     // }
 
-    pub unsafe fn new_from_memory(data: &[u8], extension: &str) -> Self {
+    pub fn new_from_memory(data: &[u8], extension: &str) -> Self {
         let ext = CString::new(extension).unwrap();
         let mut frame_count: c_int = 0;
         let image = unsafe {
@@ -70,7 +70,20 @@ impl AnimatedTexture {
         }
     }
 
-    pub unsafe fn update_texture_to_frame(&self, frame: i32) {
+    pub fn new_placeholder(width: u32, height: u32) -> Self {
+        let image = unsafe { GenImageWhiteNoise(width as c_int, height as c_int, 1.0) };
+        let raw_texture = unsafe { LoadTextureFromImage(image) };
+
+        Self {
+            image,
+            frame_count: 0,
+            frame_width: image.width,
+            frame_height: image.height,
+            texture: FfiTextureWrapper(raw_texture),
+        }
+    }
+
+    pub fn update_texture_to_frame(&self, frame: i32) {
         // let frame_size = (self.frame_width * self.frame_height * 4) as usize; // 4 bytes per pixel (RGBA)
         // let offset = (frame_size * frame as usize) as isize;
         // let frame_ptr = self.image.data.offset(offset) as *mut _;

@@ -30,7 +30,7 @@ impl Renderer {
         gui: &GUI,
     ) {
         let mut draw_handle = handle.begin_drawing(thread);
-        draw_handle.clear_background(Color::WHITE);
+        draw_handle.clear_background(Color::GRAY);
 
         //gui.draw(&mut draw_handle, game_state);
         self.draw_gui(gui, game_state, &mut draw_handle);
@@ -71,8 +71,8 @@ impl Renderer {
                 // TODO: better handling
                 let anim_source: AnimationSource = match item.item {
                     Item::Axe => AnimationSource::Axe,
-                    Item::BlobSpawner => AnimationSource::Placeholder,
-                    // _ => AnimationSource::Axe,
+                    Item::BlobSpawner => AnimationSource::BlobSpawner,
+                    Item::Wood => AnimationSource::PlaceholderSmall, // _ => AnimationSource::Axe,
                 };
 
                 self.update_and_draw_animation(
@@ -145,9 +145,14 @@ impl Renderer {
     }
     fn draw_items(&mut self, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
         if !game_state.get_world().get_item_map().is_empty() {
-            for position in game_state.get_world().get_item_map().keys() {
+            for (position, item) in game_state.get_world().get_item_map() {
+                let anim_source = match *item {
+                    Item::BlobSpawner => AnimationSource::BlobSpawner,
+                    Item::Wood => AnimationSource::PlaceholderSmall,
+                    Item::Axe => AnimationSource::Axe,
+                };
                 self.update_and_draw_animation(
-                    AnimationSource::Placeholder,
+                    anim_source,
                     None,
                     position.x,
                     position.y,

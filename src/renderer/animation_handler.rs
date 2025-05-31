@@ -23,7 +23,10 @@ pub enum AnimationSource {
     Blob,
     Player,
     Axe,
-    Placeholder,
+    BlobSpawner,
+    PlaceholderSmall,
+    PlaceholderMedium,
+    PlaceholderLarge,
 }
 
 pub struct Animation {
@@ -89,12 +92,24 @@ impl AnimationHandler {
                     Animations::Single(Animation::new_from_memory(AXE_GIF, GIF_EXTENSION, 0.2)),
                 ),
                 (
-                    AnimationSource::Placeholder,
+                    AnimationSource::BlobSpawner,
                     Animations::Single(Animation::new_from_memory(
                         PLACEHOLDER_PNG,
                         PNG_EXTENSION,
                         0.0,
                     )),
+                ),
+                (
+                    AnimationSource::PlaceholderSmall,
+                    Animations::Single(Animation::new_placeholder(32, 32)),
+                ),
+                (
+                    AnimationSource::PlaceholderMedium,
+                    Animations::Single(Animation::new_placeholder(64, 64)),
+                ),
+                (
+                    AnimationSource::PlaceholderLarge,
+                    Animations::Single(Animation::new_placeholder(128, 128)),
                 ),
             ])
         }
@@ -113,10 +128,19 @@ impl Animation {
 
     pub unsafe fn new_from_memory(data: &[u8], extension: &str, frame_delay: f32) -> Self {
         Self {
-            texture: unsafe { AnimatedTexture::new_from_memory(data, extension) },
+            texture: AnimatedTexture::new_from_memory(data, extension),
             current_frame: 0,
             frame_timer: 0.0,
             frame_delay,
+        }
+    }
+
+    pub unsafe fn new_placeholder(width: u32, height: u32) -> Self {
+        Self {
+            texture: AnimatedTexture::new_placeholder(width, height),
+            current_frame: 0,
+            frame_timer: 0.0,
+            frame_delay: 0.0,
         }
     }
 
