@@ -10,7 +10,7 @@ use crate::{
     input_handler::InputEvent,
     inventory::{
         Inventory,
-        item::{InventoryItem, Item},
+        item::{InventoryItem, Item, ItemKind},
     },
     utils::{Position, can_move},
 };
@@ -43,8 +43,8 @@ impl Player {
             inventory: Inventory::new(
                 INVENTORY_SIZE_START,
                 Some(vec![
-                    InventoryItem::new(Item::Axe, 0),
-                    InventoryItem::new(Item::BlobSpawner, 1),
+                    InventoryItem::new(Item::new(ItemKind::Axe), 0),
+                    InventoryItem::new(Item::new(ItemKind::BlobSpawner), 1),
                 ]),
             ),
             direction: Direction::Down,
@@ -69,13 +69,13 @@ impl Player {
     pub fn handle_other_input(&mut self, input: &InputEvent, world: &mut World) {
         if *input == InputEvent::E {
             if let Some(inventory_item) = self.inventory.get_selected_hotbar_item() {
-                if inventory_item.item == Item::Axe && !self.is_attacking {
+                if inventory_item.item.kind == ItemKind::Axe && !self.is_attacking {
                     self.is_attacking = true;
                     self.attack_timer = 0;
                 }
 
-                if inventory_item.item == Item::BlobSpawner {
-                    world.place_item(self.get_center_position(), Item::BlobSpawner);
+                if inventory_item.item.kind == ItemKind::BlobSpawner {
+                    world.place_item(self.get_center_position(), inventory_item.item);
                     self.inventory.remove_selected_item();
                 }
             }
@@ -132,5 +132,9 @@ impl Player {
             width: PLAYER_WIDTH as f32,
             height: PLAYER_HEIGHT as f32,
         }
+    }
+
+    pub fn get_selected_hotbar_item(&mut self) -> Option<InventoryItem> {
+        self.inventory.get_selected_hotbar_item()
     }
 }

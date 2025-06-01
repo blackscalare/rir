@@ -2,7 +2,7 @@ use crate::{
     constants::sizes::{WINDOW_HEIGHT, WINDOW_WIDTH},
     game_state::{GameState, player::Direction},
     gui::GUI,
-    inventory::item::Item,
+    inventory::item::ItemKind,
 };
 use animation_handler::{AnimationHandler, AnimationSource, Animations};
 use raylib::prelude::*;
@@ -15,10 +15,8 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn new() -> Renderer {
-        unsafe {
-            Renderer {
-                animations: AnimationHandler::new(),
-            }
+        Renderer {
+            animations: AnimationHandler::new(),
         }
     }
 
@@ -26,13 +24,12 @@ impl Renderer {
         &mut self,
         handle: &mut RaylibHandle,
         thread: &RaylibThread,
-        game_state: &GameState,
+        game_state: &mut GameState,
         gui: &GUI,
     ) {
         let mut draw_handle = handle.begin_drawing(thread);
         draw_handle.clear_background(Color::GRAY);
 
-        //gui.draw(&mut draw_handle, game_state);
         self.draw_gui(gui, game_state, &mut draw_handle);
         self.draw_player(game_state, &mut draw_handle);
         self.draw_blobs(game_state, &mut draw_handle);
@@ -40,7 +37,12 @@ impl Renderer {
         draw_handle.draw_fps(WINDOW_WIDTH - 100, 10);
     }
 
-    fn draw_gui(&mut self, gui: &GUI, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
+    fn draw_gui(
+        &mut self,
+        gui: &GUI,
+        game_state: &mut GameState,
+        draw_handle: &mut RaylibDrawHandle,
+    ) {
         let total_width: i32 = (gui.hud.hotbar.size * (50 + 10) - 10) as i32;
         for i in 0..gui.hud.hotbar.size {
             let start_x = (WINDOW_WIDTH - total_width) / 2;
@@ -69,10 +71,10 @@ impl Renderer {
                 .find(|inv_item| inv_item.hotbar_slot == Some(i))
             {
                 // TODO: better handling
-                let anim_source: AnimationSource = match item.item {
-                    Item::Axe => AnimationSource::Axe,
-                    Item::BlobSpawner => AnimationSource::BlobSpawner,
-                    Item::Wood => AnimationSource::PlaceholderSmall, // _ => AnimationSource::Axe,
+                let anim_source: AnimationSource = match item.item.kind {
+                    ItemKind::Axe => AnimationSource::Axe,
+                    ItemKind::BlobSpawner => AnimationSource::BlobSpawner,
+                    ItemKind::Wood => AnimationSource::PlaceholderSmall, // _ => AnimationSource::Axe,
                 };
 
                 self.update_and_draw_animation(
@@ -87,7 +89,7 @@ impl Renderer {
         }
     }
 
-    fn draw_player(&mut self, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
+    fn draw_player(&mut self, game_state: &mut GameState, draw_handle: &mut RaylibDrawHandle) {
         let player = game_state.get_player();
 
         self.update_and_draw_animation(
@@ -100,14 +102,24 @@ impl Renderer {
         );
         // TODO: is_attacking + get what's selected in the hotbar
         if player.is_attacking {
-            self.update_and_draw_animation(
-                AnimationSource::Axe,
-                Some(&player.direction),
-                player.x,
-                player.y,
-                Color::WHITE,
-                draw_handle,
-            );
+            if let Some(selected_item) = player.get_selected_hotbar_item() {
+                let anim_source: Option<AnimationSource> = match selected_item.item.kind {
+                    ItemKind::Axe => Some(AnimationSource::Axe),
+                    _ => None,
+                };
+
+                // WARN: Clippy warns but another nested if is ugly compared to map
+                anim_source.map(|source| {
+                    self.update_and_draw_animation(
+                        source,
+                        Some(&player.direction),
+                        player.x,
+                        player.y,
+                        Color::WHITE,
+                        draw_handle,
+                    );
+                });
+            }
         }
     }
 
@@ -146,10 +158,10 @@ impl Renderer {
     fn draw_items(&mut self, game_state: &GameState, draw_handle: &mut RaylibDrawHandle) {
         if !game_state.get_world().get_item_map().is_empty() {
             for (position, item) in game_state.get_world().get_item_map() {
-                let anim_source = match *item {
-                    Item::BlobSpawner => AnimationSource::BlobSpawner,
-                    Item::Wood => AnimationSource::PlaceholderSmall,
-                    Item::Axe => AnimationSource::Axe,
+                let anim_source = match item.kind {
+                    ItemKind::BlobSpawner => AnimationSource::BlobSpawner,
+                    ItemKind::Wood => AnimationSource::PlaceholderSmall,
+                    ItemKind::Axe => AnimationSource::Axe,
                 };
                 self.update_and_draw_animation(
                     anim_source,

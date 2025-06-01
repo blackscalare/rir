@@ -1,14 +1,14 @@
-use std::{collections::VecDeque, process::exit};
+use std::{
+    collections::{HashMap, VecDeque},
+    process::exit,
+};
 
 use blob::{Blob, BlobActivity};
 use player::Player;
-use raylib::{RaylibHandle, ffi::CheckCollisionRecs};
-use tree::Tree;
+use raylib::RaylibHandle;
 use world::World;
 
-use crate::{
-    constants::timers::BLOB_SPAWN_TIMER, gui::GUI, input_handler::InputEvent, inventory::item::Item,
-};
+use crate::{gui::GUI, input_handler::InputEvent, inventory::item::ItemKind};
 
 mod blob;
 mod food;
@@ -20,7 +20,7 @@ pub struct GameState {
     world: World,
     player: Player,
     blobs: Vec<Blob>,
-    last_blob_spawn: f64,
+    last_blob_spawn: HashMap<usize, f64>,
 }
 
 impl GameState {
@@ -29,7 +29,7 @@ impl GameState {
             world: World::new(),
             player: player::Player::new(),
             blobs: Vec::new(),
-            last_blob_spawn: 0.0,
+            last_blob_spawn: HashMap::new(),
         }
     }
 
@@ -49,8 +49,8 @@ impl GameState {
         &self.world
     }
 
-    pub fn get_player(&self) -> &Player {
-        &self.player
+    pub fn get_player(&mut self) -> &mut Player {
+        &mut self.player
     }
 
     pub fn get_blobs(&self) -> &Vec<Blob> {
@@ -82,49 +82,49 @@ impl GameState {
     }
 
     pub fn handle_blobs(&mut self, handle: &mut RaylibHandle) {
-        if self.should_spawn_blob(handle)
-            && !self.world.get_item_map().is_empty()
-            && self
-                .world
-                .get_item_map()
+        let item_map = self.world.get_item_map();
+        let mut spawner_indices_to_spawn = Vec::new();
+
+        if !item_map.is_empty()
+            && item_map
                 .iter()
-                .any(|item| *item.1 == Item::BlobSpawner)
+                .any(|(_, item)| item.kind == ItemKind::BlobSpawner)
         {
-            println!("Creating new blob!");
-            // TODO: implement BlobSpawner spawn logic
-            for (position, item) in self.world.get_item_map() {
-                if *item == Item::BlobSpawner {
-                    self.blobs.push(Blob::new(position.x, position.y));
+            for (i, (position, item)) in item_map.iter().enumerate() {
+                if item.kind == ItemKind::BlobSpawner {
+                    let should_spawn = {
+                        if let Some(last_spawn) = self.last_blob_spawn.get(&i) {
+                            let current_time = handle.get_time();
+                            current_time - last_spawn >= item.get_spawn_time()
+                        } else {
+                            true
+                        }
+                    };
+
+                    if should_spawn {
+                        spawner_indices_to_spawn.push((i, position));
+                    }
                 }
             }
         }
+
+        for (i, position) in spawner_indices_to_spawn {
+            let current_time = handle.get_time();
+            self.last_blob_spawn.insert(i, current_time);
+            self.blobs.push(Blob::new(position.x, position.y));
+            println!("Spawned blob at ({}, {})", position.x, position.y);
+        }
+
         for blob in self.blobs.iter_mut() {
             match blob.get_activity() {
                 BlobActivity::None => {}
-
-                BlobActivity::Eating => {
-                    blob.munch();
-                }
-
-                BlobActivity::Searching => {
-                    blob.search();
-                }
+                BlobActivity::Eating => blob.munch(),
+                BlobActivity::Searching => blob.search(),
             }
 
-            // TODO: use a dead flag and start a counter before it's removed
             if blob.get_health() == 0 {
-                // TODO: remove
+                // TODO: mark as dead
             }
         }
-    }
-
-    fn should_spawn_blob(&mut self, handle: &RaylibHandle) -> bool {
-        let current_time = handle.get_time();
-        if current_time - self.last_blob_spawn >= BLOB_SPAWN_TIMER {
-            self.last_blob_spawn = current_time;
-            return true;
-        }
-
-        false
     }
 }

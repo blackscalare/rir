@@ -36,7 +36,7 @@ fn main() {
         let mut input_events: VecDeque<InputEvent> = poll_inputs(&handle);
         game_state.update(&mut handle, &mut input_events, &gui);
         gui.update(&mut input_events);
-        renderer.update(&mut handle, &thread, &game_state, &gui);
+        renderer.update(&mut handle, &thread, &mut game_state, &gui);
 
         input_events.clear();
     }

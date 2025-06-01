@@ -1,6 +1,9 @@
 use raylib::ffi::Rectangle;
 
-use crate::constants::stats::SMALL_TREE_HEALTH;
+use crate::constants::{
+    sizes::{TREE_HEIGHT, TREE_WIDTH},
+    stats::SMALL_TREE_HEALTH,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Tree {
@@ -32,8 +35,8 @@ impl Tree {
         Rectangle {
             x: self.x as f32,
             y: self.y as f32,
-            width: 128.0,
-            height: 128.0,
+            width: TREE_WIDTH as f32,
+            height: TREE_HEIGHT as f32,
         }
     }
 }

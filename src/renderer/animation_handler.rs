@@ -41,13 +41,13 @@ pub struct AnimationHandler {
 }
 
 impl AnimationHandler {
-    pub unsafe fn new() -> Self {
+    pub fn new() -> Self {
         Self {
-            animations: unsafe { Self::generate_animations() },
+            animations: Self::generate_animations(),
         }
     }
 
-    unsafe fn generate_animations() -> HashMap<AnimationSource, Animations> {
+    fn generate_animations() -> HashMap<AnimationSource, Animations> {
         unsafe {
             HashMap::from([
                 (
@@ -155,9 +155,7 @@ impl Animation {
             self.current_frame = (self.current_frame + 1) % self.texture.frame_count();
         }
 
-        unsafe {
-            self.texture.update_texture_to_frame(self.current_frame);
-        }
+        self.texture.update_texture_to_frame(self.current_frame);
     }
 
     // pub fn get_frame_source_rect(&self) -> raylib::core::math::Rectangle {

@@ -1,8 +1,11 @@
-use std::collections::{HashMap, hash_map::ValuesMut};
+use std::collections::HashMap;
 
 use raylib::ffi::CheckCollisionRecs;
 
-use crate::{inventory::item::Item, utils::Position};
+use crate::{
+    inventory::item::{Item, ItemKind},
+    utils::Position,
+};
 
 use super::{player::Player, tree::Tree};
 
@@ -47,10 +50,6 @@ impl World {
         HashMap::from([(Position { x: 100, y: 100 }, Tree::new(100, 100))])
     }
 
-    pub fn get_trees(&mut self) -> ValuesMut<'_, Position, Tree> {
-        self.trees.values_mut()
-    }
-
     pub fn get_tree_map(&self) -> &HashMap<Position, Tree> {
         &self.trees
     }
@@ -75,8 +74,9 @@ impl World {
                 let did_collide = CheckCollisionRecs(player.get_rec(), tree.get_rec());
                 if did_collide && player.is_attacking {
                     println!("Attacked tree");
-                    // TODO:take damage according to item
-                    tree.take_damage(10);
+                    if let Some(item) = player.get_selected_hotbar_item() {
+                        tree.take_damage(item.item.get_damage());
+                    }
                     if tree.health == 0 {
                         trees_to_destroy.push(*position);
                     }
@@ -90,7 +90,7 @@ impl World {
     fn destroy_trees(&mut self, trees_to_destroy: Vec<Position>) {
         for position in trees_to_destroy {
             self.trees.remove(&position);
-            self.items.insert(position, Item::Wood);
+            self.items.insert(position, Item::new(ItemKind::Wood));
         }
     }
 }
