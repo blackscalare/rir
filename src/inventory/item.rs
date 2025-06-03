@@ -1,4 +1,13 @@
-use crate::constants::{stats::DEFAULT_AXE_DAMAGE, timers::BLOB_SPAWN_TIMER};
+use raylib::ffi::Rectangle;
+
+use crate::{
+    constants::{
+        sizes::{PLACEHOLDER_MEDIUM, PLACEHOLDER_SMALL},
+        stats::DEFAULT_AXE_DAMAGE,
+        timers::BLOB_SPAWN_TIMER,
+    },
+    utils::Position,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Item {
@@ -45,6 +54,30 @@ impl Item {
     pub fn get_spawn_time(&self) -> f64 {
         match &self.data {
             ItemData::BlobSpawnerData { spawn_timer } => *spawn_timer,
+            _ => 0.0,
+        }
+    }
+
+    pub fn get_rec(&self, position: &Position) -> Rectangle {
+        Rectangle {
+            x: position.x as f32,
+            y: position.y as f32,
+            width: Self::get_width(self.kind),
+            height: Self::get_height(self.kind),
+        }
+    }
+
+    fn get_width(item_kind: ItemKind) -> f32 {
+        match item_kind {
+            ItemKind::BlobSpawner => PLACEHOLDER_MEDIUM as f32,
+            ItemKind::Wood => PLACEHOLDER_SMALL as f32,
+            _ => 0.0,
+        }
+    }
+    fn get_height(item_kind: ItemKind) -> f32 {
+        match item_kind {
+            ItemKind::BlobSpawner => PLACEHOLDER_MEDIUM as f32,
+            ItemKind::Wood => PLACEHOLDER_SMALL as f32,
             _ => 0.0,
         }
     }

@@ -87,6 +87,19 @@ impl World {
         self.destroy_trees(trees_to_destroy);
     }
 
+    fn handle_item_collision(&mut self, player: &mut Player) {
+        let mut items_to_remove: Vec<Position> = vec![];
+
+        for (position, item) in self.items.iter_mut() {
+            unsafe {
+                let did_collide = CheckCollisionRecs(player.get_rec(), item.get_rec(position));
+                if did_collide {
+                    println!("Collided with {:#?}", item);
+                }
+            }
+        }
+    }
+
     fn destroy_trees(&mut self, trees_to_destroy: Vec<Position>) {
         for position in trees_to_destroy {
             self.trees.remove(&position);
