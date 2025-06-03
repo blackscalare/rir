@@ -43,7 +43,7 @@ fn main() {
 }
 
 fn watch_config_changes() -> RecommendedWatcher {
-    fn fun_name(res: Result<notify::Event, notify::Error>) {
+    fn reload_on_modify(res: Result<notify::Event, notify::Error>) {
         if let Ok(event) = res {
             if event.kind.is_modify() {
                 println!("🔄 Config file changed: {:?}", event);
@@ -51,7 +51,8 @@ fn watch_config_changes() -> RecommendedWatcher {
             }
         }
     }
-    let mut watcher = notify::recommended_watcher(fun_name).expect("Failed to create watcher");
+    let mut watcher =
+        notify::recommended_watcher(reload_on_modify).expect("Failed to create watcher");
 
     watcher
         .watch(Path::new("config.toml"), RecursiveMode::NonRecursive)
