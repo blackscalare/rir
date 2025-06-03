@@ -73,7 +73,7 @@ impl GameState {
     }
 
     fn handle_input(&mut self, input: &InputEvent) {
-        if *input == InputEvent::Escape {
+        if *input == InputEvent::Escape || *input == InputEvent::Q {
             exit(0);
         }
 

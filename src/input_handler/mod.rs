@@ -20,6 +20,7 @@ pub enum InputEvent {
     MouseLeft,
     MouseRight,
     E,
+    Q,
     Escape,
 }
 
@@ -44,6 +45,10 @@ pub fn poll_inputs(rl: &RaylibHandle) -> VecDeque<InputEvent> {
 
     if rl.is_key_down(KeyboardKey::KEY_E) {
         events.push_back(InputEvent::E);
+    }
+
+    if rl.is_key_down(KeyboardKey::KEY_Q) {
+        events.push_back(InputEvent::Q);
     }
 
     if rl.is_key_down(KeyboardKey::KEY_ENTER) {
