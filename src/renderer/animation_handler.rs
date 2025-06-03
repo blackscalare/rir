@@ -7,6 +7,7 @@ use crate::{
             AXE_GIF, PLACEHOLDER_PNG, PLAYER_DOWN_GIF, PLAYER_LEFT_GIF, PLAYER_RIGHT_GIF,
             PLAYER_UP_GIF, SMALL_BLOB_GIF, SMALL_TREE_GIF,
         },
+        sizes::{PLACEHOLDER_LARGE, PLACEHOLDER_MEDIUM, PLACEHOLDER_SMALL},
     },
     game_state::player::Direction,
     renderer::texture_handler::AnimatedTexture,
@@ -101,15 +102,24 @@ impl AnimationHandler {
                 ),
                 (
                     AnimationSource::PlaceholderSmall,
-                    Animations::Single(Animation::new_placeholder(32, 32)),
+                    Animations::Single(Animation::new_placeholder(
+                        PLACEHOLDER_SMALL as u32,
+                        PLACEHOLDER_SMALL as u32,
+                    )),
                 ),
                 (
                     AnimationSource::PlaceholderMedium,
-                    Animations::Single(Animation::new_placeholder(64, 64)),
+                    Animations::Single(Animation::new_placeholder(
+                        PLACEHOLDER_MEDIUM as u32,
+                        PLACEHOLDER_MEDIUM as u32,
+                    )),
                 ),
                 (
                     AnimationSource::PlaceholderLarge,
-                    Animations::Single(Animation::new_placeholder(128, 128)),
+                    Animations::Single(Animation::new_placeholder(
+                        PLACEHOLDER_LARGE as u32,
+                        PLACEHOLDER_LARGE as u32,
+                    )),
                 ),
             ])
         }

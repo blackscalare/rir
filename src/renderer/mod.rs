@@ -1,5 +1,5 @@
 use crate::{
-    constants::sizes::{WINDOW_HEIGHT, WINDOW_WIDTH},
+    constants::sizes::{BLOB_HEIGHT, BLOB_WIDTH, PLACEHOLDER_SMALL, WINDOW_HEIGHT, WINDOW_WIDTH},
     game_state::{GameState, player::Direction},
     gui::GUI,
     inventory::item::ItemKind,
@@ -171,6 +171,28 @@ impl Renderer {
                     Color::WHITE,
                     draw_handle,
                 );
+
+                match item.kind {
+                    ItemKind::BlobSpawner => {
+                        draw_handle.draw_text(
+                            "B",
+                            position.x + (BLOB_WIDTH / 2) - (16 / 2),
+                            position.y + (BLOB_HEIGHT / 2) - (16 / 2),
+                            16,
+                            Color::WHITE,
+                        );
+                    }
+                    ItemKind::Wood => {
+                        draw_handle.draw_text(
+                            "W",
+                            position.x + (PLACEHOLDER_SMALL / 2) - (12 / 2),
+                            position.y + (PLACEHOLDER_SMALL / 2) - (12 / 2),
+                            12,
+                            Color::BLACK,
+                        );
+                    }
+                    _ => {}
+                }
             }
         }
     }
