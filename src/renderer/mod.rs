@@ -1,4 +1,5 @@
 use crate::{
+    config::{self, get_config},
     constants::sizes::{BLOB_HEIGHT, BLOB_WIDTH, PLACEHOLDER_SMALL, WINDOW_HEIGHT, WINDOW_WIDTH},
     game_state::{GameState, player::Direction},
     gui::GUI,
@@ -171,7 +172,9 @@ impl Renderer {
                     Color::WHITE,
                     draw_handle,
                 );
-
+                if get_config().debug {
+                    draw_handle.draw_rectangle_lines_ex(item.get_rec(position), 1.0, Color::RED);
+                }
                 match item.kind {
                     ItemKind::BlobSpawner => {
                         draw_handle.draw_text(

@@ -9,6 +9,7 @@ pub struct Config {
     pub game_name: String,
     pub blob_health_enabled: bool,
     pub hotbar_size: u32,
+    pub debug: bool,
 }
 
 // Global config behind RwLock
