@@ -49,7 +49,7 @@ impl Renderer {
             let start_x = (WINDOW_WIDTH - total_width) / 2;
             let x_pos: i32 = start_x + i as i32 * (50 + 10);
             let y_pos = WINDOW_HEIGHT - 60;
-            if gui.hud.hotbar.selected_rect - 1 == i {
+            if gui.hud.hotbar.selected_rect == i {
                 draw_handle.draw_rectangle_lines(x_pos, y_pos, 50, 50, Color::RED);
             } else {
                 draw_handle.draw_rectangle_lines(x_pos, y_pos, 50, 50, Color::BLACK);

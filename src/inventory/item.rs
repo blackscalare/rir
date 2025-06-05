@@ -74,11 +74,19 @@ impl Item {
             _ => 0.0,
         }
     }
+
     fn get_height(item_kind: ItemKind) -> f32 {
         match item_kind {
             ItemKind::BlobSpawner => PLACEHOLDER_MEDIUM as f32,
             ItemKind::Wood => PLACEHOLDER_SMALL as f32,
             _ => 0.0,
+        }
+    }
+
+    pub fn is_pickup(&self) -> bool {
+        match self.kind {
+            ItemKind::Wood => true,
+            _ => false,
         }
     }
 }

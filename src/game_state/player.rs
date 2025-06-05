@@ -28,7 +28,9 @@ pub enum Direction {
 #[derive(Debug, Clone)]
 pub struct Player {
     pub x: i32,
+    pub last_x: i32,
     pub y: i32,
+    pub last_y: i32,
     pub inventory: Inventory,
     pub direction: Direction,
     pub is_attacking: bool,
@@ -39,7 +41,9 @@ impl Player {
     pub fn new() -> Player {
         Player {
             x: 50,
+            last_x: 50,
             y: 50,
+            last_y: 50,
             inventory: Inventory::new(
                 INVENTORY_SIZE_START,
                 Some(vec![
@@ -63,7 +67,7 @@ impl Player {
         }
 
         self.inventory
-            .set_selected_item_from_hotbar(gui.hud.hotbar.selected_rect - 1);
+            .set_selected_item_from_hotbar(gui.hud.hotbar.selected_rect);
     }
 
     pub fn handle_other_input(&mut self, input: &InputEvent, world: &mut World) {
@@ -90,6 +94,9 @@ impl Player {
     }
 
     pub fn move_player(&mut self, input: &InputEvent) {
+        self.last_x = self.x;
+        self.last_y = self.y;
+
         if !can_move(self.x, self.y, input) {
             return;
         }

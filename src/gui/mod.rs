@@ -94,19 +94,19 @@ impl GUI {
     fn select_hotbar(&mut self, event: &mut InputEvent) {
         match event {
             InputEvent::Key1 => {
-                self.hud.hotbar.selected_rect = 1;
+                self.hud.hotbar.selected_rect = 0;
             }
             InputEvent::Key2 => {
-                self.hud.hotbar.selected_rect = 2;
+                self.hud.hotbar.selected_rect = 1;
             }
             InputEvent::Key3 => {
-                self.hud.hotbar.selected_rect = 3;
+                self.hud.hotbar.selected_rect = 2;
             }
             InputEvent::Key4 => {
-                self.hud.hotbar.selected_rect = 4;
+                self.hud.hotbar.selected_rect = 3;
             }
             InputEvent::Key5 => {
-                self.hud.hotbar.selected_rect = 5;
+                self.hud.hotbar.selected_rect = 4;
             }
             _ => {}
         }

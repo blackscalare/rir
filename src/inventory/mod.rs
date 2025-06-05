@@ -1,4 +1,8 @@
+use std::collections::HashSet;
+
 use item::InventoryItem;
+
+use crate::config::get_config;
 
 pub mod item;
 
@@ -34,8 +38,23 @@ impl Inventory {
         self.items.as_mut()
     }
 
-    pub fn add_item(&mut self, item: InventoryItem) {
+    pub fn add_item(&mut self, mut item: InventoryItem) {
+        if let Some(slot) = self.get_next_free_hotbar_slot() {
+            item.hotbar_slot = Some(slot);
+            self.selected_hotbar_item = Some(item);
+        }
+
         self.items.push(item);
+    }
+
+    fn get_next_free_hotbar_slot(&mut self) -> Option<u32> {
+        let used_slots: HashSet<u32> = self
+            .items
+            .iter()
+            .filter_map(|item| item.hotbar_slot)
+            .collect();
+
+        (1..=get_config().hotbar_size).find(|slot| !used_slots.contains(slot))
     }
 
     pub fn set_selected_item_from_hotbar(&mut self, index: u32) {

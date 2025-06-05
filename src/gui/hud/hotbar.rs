@@ -10,7 +10,7 @@ impl Hotbar {
         let cfg = get_config();
         Hotbar {
             size: cfg.hotbar_size,
-            selected_rect: 1,
+            selected_rect: 0,
         }
     }
 }

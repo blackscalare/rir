@@ -47,7 +47,10 @@ impl World {
     }
 
     fn init_trees() -> HashMap<Position, Tree> {
-        HashMap::from([(Position { x: 100, y: 100 }, Tree::new(100, 100))])
+        HashMap::from([
+            (Position { x: 100, y: 100 }, Tree::new(100, 100)),
+            (Position { x: 150, y: 150 }, Tree::new(150, 150)),
+        ])
     }
 
     pub fn get_tree_map(&self) -> &HashMap<Position, Tree> {
@@ -64,6 +67,7 @@ impl World {
 
     pub fn handle_collisions(&mut self, player: &mut Player) {
         self.handle_tree_collisions(player);
+        self.handle_item_collision(player);
     }
 
     fn handle_tree_collisions(&mut self, player: &mut Player) {
@@ -93,10 +97,17 @@ impl World {
         for (position, item) in self.items.iter_mut() {
             unsafe {
                 let did_collide = CheckCollisionRecs(player.get_rec(), item.get_rec(position));
-                if did_collide {
-                    println!("Collided with {:#?}", item);
+                if did_collide && item.is_pickup() {
+                    println!("Picked up {:?}", item);
+                    items_to_remove.push(*position);
+                    player.add_item(*item);
                 }
             }
+        }
+
+        if !items_to_remove.is_empty() {
+            self.items
+                .retain(|position, _| !items_to_remove.contains(position));
         }
     }
 
