@@ -1,6 +1,9 @@
 use crate::{
-    config::{self, get_config},
-    constants::sizes::{BLOB_HEIGHT, BLOB_WIDTH, PLACEHOLDER_SMALL, WINDOW_HEIGHT, WINDOW_WIDTH},
+    config::get_config,
+    constants::sizes::{
+        BLOB_HEIGHT, BLOB_WIDTH, PLACEHOLDER_SMALL, TREE_HEIGHT, TREE_WIDTH, WINDOW_HEIGHT,
+        WINDOW_WIDTH,
+    },
     game_state::{GameState, player::Direction},
     gui::GUI,
     inventory::item::ItemKind,
@@ -101,6 +104,11 @@ impl Renderer {
             Color::WHITE,
             draw_handle,
         );
+
+        if get_config().debug {
+            draw_handle.draw_rectangle_lines_ex(player.get_rec(), 1.0, Color::RED);
+        }
+
         // TODO: is_attacking + get what's selected in the hotbar
         if player.is_attacking {
             if let Some(selected_item) = player.get_selected_hotbar_item() {
@@ -153,6 +161,19 @@ impl Renderer {
                     Color::WHITE,
                     draw_handle,
                 );
+
+                if get_config().debug {
+                    draw_handle.draw_rectangle_lines_ex(
+                        Rectangle {
+                            x: position.x as f32,
+                            y: position.y as f32,
+                            width: TREE_WIDTH as f32,
+                            height: TREE_HEIGHT as f32,
+                        },
+                        1.0,
+                        Color::RED,
+                    );
+                }
             }
         }
     }

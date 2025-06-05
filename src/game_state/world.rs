@@ -76,6 +76,9 @@ impl World {
         for (position, tree) in self.trees.iter_mut() {
             unsafe {
                 let did_collide = CheckCollisionRecs(player.get_rec(), tree.get_rec());
+                if did_collide {
+                    player.reset_position();
+                }
                 if did_collide && player.is_attacking {
                     println!("Attacked tree");
                     if let Some(item) = player.get_selected_hotbar_item() {

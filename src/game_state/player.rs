@@ -4,7 +4,7 @@ use crate::{
     config::get_config,
     constants::{
         self,
-        sizes::{INVENTORY_SIZE_START, PLAYER_HEIGHT, PLAYER_WIDTH},
+        sizes::{INVENTORY_SIZE_START, PLAYER_HEIGHT, PLAYER_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH},
     },
     gui::GUI,
     input_handler::InputEvent,
@@ -40,10 +40,10 @@ pub struct Player {
 impl Player {
     pub fn new() -> Player {
         Player {
-            x: 50,
-            last_x: 50,
-            y: 50,
-            last_y: 50,
+            x: WINDOW_WIDTH / 2,
+            last_x: WINDOW_WIDTH / 2,
+            y: WINDOW_HEIGHT / 2,
+            last_y: WINDOW_HEIGHT / 2,
             inventory: Inventory::new(
                 INVENTORY_SIZE_START,
                 Some(vec![
@@ -139,6 +139,11 @@ impl Player {
             width: PLAYER_WIDTH as f32,
             height: PLAYER_HEIGHT as f32,
         }
+    }
+
+    pub fn reset_position(&mut self) {
+        self.x = self.last_x;
+        self.y = self.last_y;
     }
 
     pub fn get_selected_hotbar_item(&mut self) -> Option<InventoryItem> {
