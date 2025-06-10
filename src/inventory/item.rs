@@ -22,6 +22,16 @@ pub enum ItemKind {
     Wood,
 }
 
+impl ItemKind {
+    pub fn from_str(str: &str) -> Self {
+        match str {
+            "BlobSpawner" => ItemKind::BlobSpawner,
+            "Wood" => ItemKind::Wood,
+            _ => panic!("Unknown ItemKind: {}", str),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ItemData {
     None,

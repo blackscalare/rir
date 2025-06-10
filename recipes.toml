@@ -1,0 +1,4 @@
+[[recipes]]
+id = 0
+name = "Blob Spawner"
+materials = [{ kind = "Wood", amount = 5 }]

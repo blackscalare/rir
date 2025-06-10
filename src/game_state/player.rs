@@ -1,11 +1,15 @@
+use std::collections::HashMap;
+
 use raylib::ffi::Rectangle;
 
 use crate::{
     config::get_config,
     constants::{
         self,
+        recipe_ids::BLOB_SPAWNER_ID,
         sizes::{INVENTORY_SIZE_START, PLAYER_HEIGHT, PLAYER_WIDTH, WINDOW_HEIGHT, WINDOW_WIDTH},
     },
+    crafting::{RECIPES, Recipe},
     gui::GUI,
     input_handler::InputEvent,
     inventory::{
@@ -34,6 +38,7 @@ pub struct Player {
     pub inventory: Inventory,
     pub direction: Direction,
     pub is_attacking: bool,
+    pub known_recipes: Vec<Recipe>,
     attack_timer: i32,
 }
 
@@ -54,6 +59,12 @@ impl Player {
             direction: Direction::Down,
             is_attacking: false,
             attack_timer: 0,
+            known_recipes: vec![
+                RECIPES
+                    .get(&BLOB_SPAWNER_ID)
+                    .cloned()
+                    .expect("Item does not exist!"),
+            ],
         }
     }
 

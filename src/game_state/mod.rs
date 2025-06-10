@@ -63,9 +63,6 @@ impl GameState {
 
     unsafe fn handle_player(&mut self, input_events: &mut VecDeque<InputEvent>, gui: &GUI) {
         self.player.update(gui);
-        // TODO: better collision detection
-        //      move to world
-        //      handle collision, problem with borrowing
         self.world.handle_collisions(&mut self.player);
         for event in input_events {
             self.handle_input(event);

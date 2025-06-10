@@ -6,6 +6,7 @@ mod input_handler;
 mod inventory;
 mod renderer;
 mod utils;
+mod crafting;
 use crate::config::reload_config;
 use config::get_config;
 use constants::sizes::{WINDOW_HEIGHT, WINDOW_WIDTH};
